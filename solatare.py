@@ -53,6 +53,12 @@ def move(fromcol, tocol):
 	moves_left += -1
 	table_show()
 
+def score(scorecol):
+	for i in range(4): scorecol.pop()
+	global moves_left
+	moves_left += 1
+	table_show()
+
 def game_start():
 	shuffle(deck)
 	#pdb.set_trace()
