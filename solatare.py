@@ -5,6 +5,7 @@ from os import system
 import random
 import texttable as tt
 import pdb
+from time import sleep
 
 suits = ["D","H","C","S"]
 ranks = ["2","3","4",'5','6','7','8','9','10',"J","Q","K","A"]
@@ -66,12 +67,38 @@ def game_start():
 	global moves_left
 	while True:
 		while moves_left:
-			pdb.set_trace()
-			#fromcol = input("what column do you want to move from? ")
-			#tocol = input("what column do you want to move to? ")
-			#print(fromcol)
-			#print(tocol)
-			#move(fromcol, tocol)
+			#pdb.set_trace()
+			action = input("1)move or 2)score or 3)deal? ")
+			if action == "deal" or action == "3" or action == 'd':
+				turn_deal()
+			elif action == "score" or action == "2" or action == 's':
+				scorecol = input('Which stack are you scoring? ')
+				if scorecol == "1":  score(col1)
+				if scorecol == "2":  score(col2)
+				if scorecol == "3":  score(col3)
+				if scorecol == "4":  score(col4)
+			elif action == "move" or action == "1" or action == 'm':
+				fromcol = input('which column do you want to move from? ')
+				tocol = input('which column do you want to move to? ')
+				if fromcol == "1":
+					if tocol == "2":  move(col1, col2)
+					if tocol == "3":  move(col1, col3)
+					if tocol == "4":  move(col1, col4)
+				if fromcol == "2":
+					if tocol == "1":  move(col2, col1)
+					if tocol == "3":  move(col2, col3)
+					if tocol == "4":  move(col2, col4)
+				if fromcol == "3":
+					if tocol == "2":  move(col3, col2)
+					if tocol == "1":  move(col3, col1)
+					if tocol == "4":  move(col3, col4)
+				if fromcol == "4":
+					if tocol == "2":  move(col4, col2)
+					if tocol == "3":  move(col4, col3)
+					if tocol == "1":  move(col4, col1)
+			else:
+				print("not a legitimate move son!");
+				sleep(4)
 		turn_deal()
 
 game_start()
