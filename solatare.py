@@ -15,35 +15,35 @@ for suit in suits:
 	for rank in ranks:
 		deck.append(rank + suit)
 
-col1 = []
-col2 = []
-col3 = []
-col4 = []
+stack = [] # stack0 is the discard pile, stacks 1-4 are the stacks
+for e in range(5): stack.append([])
+
 
 moves_left = 0
 trump = ranks[random.randint(0,len(ranks))]
 
+
 def table_show ():
 	system('clear')
 	tab = tt.Texttable()
-	bigcol = max(len(col1),len(col2),len(col3),len(col4))
-	for col in (col1, col2, col3, col4):
+	bigcol = max(len(stack[1]),len(stack[2]),len(stack[3]),len(stack[4]))
+	for col in (stack[1], stack[2], stack[3], stack[4]):
 		while len(col) < bigcol: col.append(' ')
-	for row in zip(col1, col2, col3, col4):
+	for row in zip(stack[1], stack[2], stack[3], stack[4]):
 		tab.add_row(row)
 	s = tab.draw()
 	print(s)
-	for col in (col1, col2, col3, col4):
+	for col in (stack[1], stack[2], stack[3], stack[4]):
 		while ' ' in col: col.remove(' ')
 	print("left in deck: " + str(len(deck)))
 	print("moves left: " + str(moves_left))
 	print('the trump card is: ' + trump)
 
 def turn_deal():
-	col1.append(deck.pop())
-	col2.append(deck.pop())
-	col3.append(deck.pop())
-	col4.append(deck.pop())
+	stack[1].append(deck.pop())
+	stack[2].append(deck.pop())
+	stack[3].append(deck.pop())
+	stack[4].append(deck.pop())
 	global moves_left
 	moves_left = 3
 	table_show()
@@ -55,7 +55,7 @@ def move(fromcol, tocol):
 	table_show()
 
 def score(scorecol):
-	for i in range(4): scorecol.pop()
+	for i in range(4): stack[0].append(scorecol.pop())
 	global moves_left
 	moves_left += 1
 	table_show()
@@ -73,32 +73,33 @@ def game_start():
 				turn_deal()
 			elif action == "score" or action == "2" or action == 's':
 				scorecol = input('Which stack are you scoring? ')
-				if scorecol == "1":  score(col1)
-				if scorecol == "2":  score(col2)
-				if scorecol == "3":  score(col3)
-				if scorecol == "4":  score(col4)
+				if scorecol == "1":  score(stack[1])
+				if scorecol == "2":  score(stack[2])
+				if scorecol == "3":  score(stack[3])
+				if scorecol == "4":  score(stack[4])
 			elif action == "move" or action == "1" or action == 'm':
 				fromcol = input('which column do you want to move from? ')
 				tocol = input('which column do you want to move to? ')
 				if fromcol == "1":
-					if tocol == "2":  move(col1, col2)
-					if tocol == "3":  move(col1, col3)
-					if tocol == "4":  move(col1, col4)
+					if tocol == "2":  move(stack[1], stack[2])
+					if tocol == "3":  move(stack[1], stack[3])
+					if tocol == "4":  move(stack[1], stack[4])
 				if fromcol == "2":
-					if tocol == "1":  move(col2, col1)
-					if tocol == "3":  move(col2, col3)
-					if tocol == "4":  move(col2, col4)
+					if tocol == "1":  move(stack[2], stack[1])
+					if tocol == "3":  move(stack[2], stack[3])
+					if tocol == "4":  move(stack[2], stack[4])
 				if fromcol == "3":
-					if tocol == "2":  move(col3, col2)
-					if tocol == "1":  move(col3, col1)
-					if tocol == "4":  move(col3, col4)
+					if tocol == "2":  move(stack[3], stack[2])
+					if tocol == "1":  move(stack[3], stack[1])
+					if tocol == "4":  move(stack[3], stack[4])
 				if fromcol == "4":
-					if tocol == "2":  move(col4, col2)
-					if tocol == "3":  move(col4, col3)
-					if tocol == "1":  move(col4, col1)
+					if tocol == "2":  move(stack[4], stack[2])
+					if tocol == "3":  move(stack[4], stack[3])
+					if tocol == "1":  move(stack[4], stack[1])
 			else:
 				print("not a legitimate move son!");
 				sleep(4)
 		turn_deal()
+		pdb.set_trace()
 
 game_start()
