@@ -27,7 +27,7 @@ def table_show ():
 	system('clear')
 	tab = tt.Texttable()
 	bigcol = max(len(stack[1]),len(stack[2]),len(stack[3]),len(stack[4]))
-	for col in (stack[1], stack[2], stack[3], stack[4]):
+	for col in (stack[1:]):
 		while len(col) < bigcol: col.append(' ')
 	for row in zip(stack[1], stack[2], stack[3], stack[4]):
 		tab.add_row(row)
@@ -40,16 +40,24 @@ def table_show ():
 	print('the trump card is: ' + trump)
 
 def turn_deal():
-	stack[1].append(deck.pop())
-	stack[2].append(deck.pop())
-	stack[3].append(deck.pop())
-	stack[4].append(deck.pop())
+	for e in stack[1:]:
+		e.append(deck.pop()) 
 	global moves_left
 	moves_left = 3
 	table_show()
 
-def move(fromcol, tocol):
-	tocol.append(fromcol.pop())
+def move(cardtarget, tocol):
+	cardlocation =[]
+	for e in enumerate(stack): 
+		if cardtarget in e[1]:
+			cardlocation.append(e[0])
+			cardlocation.append(e[1].index(cardtarget))
+	if cardlocation[0] == tocol or cardlocation == []:
+		print('not a valid move, sucka')
+		return 0
+	while len(stack[cardlocation[0]]) > cardlocation[1]:
+		stack[int(tocol)].append(stack[cardlocation[0]].pop(cardlocation[1]))
+	#tocol.append(fromcol.pop())
 	global moves_left
 	moves_left += -1
 	table_show()
@@ -73,32 +81,16 @@ def game_start():
 				turn_deal()
 			elif action == "score" or action == "2" or action == 's':
 				scorecol = input('Which stack are you scoring? ')
-				if scorecol == "1":  score(stack[1])
-				if scorecol == "2":  score(stack[2])
-				if scorecol == "3":  score(stack[3])
-				if scorecol == "4":  score(stack[4])
+				score(stack[int(scorecol)])
 			elif action == "move" or action == "1" or action == 'm':
-				fromcol = input('which column do you want to move from? ')
+				cardtarget = input('which card would you like to move? ')
 				tocol = input('which column do you want to move to? ')
-				if fromcol == "1":
-					if tocol == "2":  move(stack[1], stack[2])
-					if tocol == "3":  move(stack[1], stack[3])
-					if tocol == "4":  move(stack[1], stack[4])
-				if fromcol == "2":
-					if tocol == "1":  move(stack[2], stack[1])
-					if tocol == "3":  move(stack[2], stack[3])
-					if tocol == "4":  move(stack[2], stack[4])
-				if fromcol == "3":
-					if tocol == "2":  move(stack[3], stack[2])
-					if tocol == "1":  move(stack[3], stack[1])
-					if tocol == "4":  move(stack[3], stack[4])
-				if fromcol == "4":
-					if tocol == "2":  move(stack[4], stack[2])
-					if tocol == "3":  move(stack[4], stack[3])
-					if tocol == "1":  move(stack[4], stack[1])
+				move(cardtarget, tocol)
+				
 			else:
 				print("not a legitimate move son!");
 				sleep(4)
+				table_show()
 		turn_deal()
 		pdb.set_trace()
 
