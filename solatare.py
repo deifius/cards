@@ -7,8 +7,8 @@ import texttable as tt
 import pdb
 from time import sleep
 
-suits = ["D","H","C","S"]
-ranks = ["2","3","4",'5','6','7','8','9','10',"J","Q","K","A"]
+suits = ["H","D","S","C"]
+ranks = ["A","2","3","4",'5','6','7','8','9','10',"J","Q","K"]
 
 deck = []
 for suit in suits:
