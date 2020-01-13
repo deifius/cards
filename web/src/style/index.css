@@ -1,0 +1,59 @@
+html, body {
+	height: 100%;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+	background: #FAFAFA;
+	font-family: 'Helvetica Neue', arial, sans-serif;
+	font-weight: 400;
+	color: #444;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+#app {
+	height: 100%;
+}
+
+.card,
+.target {
+	width: 98px;
+	height: 145px;
+}
+.card {
+	transition: filter 150ms linear, transform 150ms linear;
+	filter: drop-shadow(0 0 0 black);
+	transform: scale(1);
+}
+.card.clickable {
+	cursor: pointer;
+}
+.card.clickable:hover {
+	filter: drop-shadow(0 0 3px black);
+	transform: scale(1.01);
+}
+.card.selected {
+	opacity: 0.3;
+}
+.target {
+	cursor: pointer;
+	background-color: teal;
+	opacity: 0.4;
+	transition: opacity 150ms linear;
+}
+.target:hover {
+	opacity: 0.8;
+}
+.row {
+	display: flex;
+	flex-direction: row;
+}
+.column {
+	display: flex;
+	flex-direction: column;
+	width: 98px;
+}
