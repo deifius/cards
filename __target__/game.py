@@ -2,6 +2,12 @@ from itertools import chain
 from random import shuffle
 import random
 
+# Install JS compiler:
+# python3 -m pip install transcrypt
+
+# Compile to JS:
+# python3 -m transcrypt -b -m -n game.py
+
 class Solatare:
 
     def __init__ (self):
@@ -23,14 +29,6 @@ class Solatare:
             self.moving_card = ""
         else:
             self.moving_card = card
-#
-# def card_can_move_to (self, fromcol, tocol):
-#     cardlocation = []
-#     for e in enumerate(self.stack):
-#         if fromcol in e[1]:
-#             cardlocation.append(e[0])
-#             cardlocation.append(e[1].index(fromcol))
-#     return cardlocation[0] != tocol and cardlocation.length > 0
 
     def move (self, card, tocol):
     	cardlocation =[]
@@ -51,6 +49,7 @@ class Solatare:
     	self.moves_left += 1
 
     def turn_deal (self):
+    	self.moves_left = 3
     	for e in self.stack[1:]:
     		e.append(self.deck.pop())
 
@@ -59,8 +58,3 @@ class Solatare:
     	self.turn_deal()
 
 solatare = Solatare ()
-
-#		tab = tt.Texttable()
-#        tab.add_row(["a", "b", "c"])
-#        document.getElementById ('explain').innerHTML = tab.draw()
-#        document.getElementById ('explain').innerHTML = "hi"

@@ -57,3 +57,56 @@ html, body {
 	flex-direction: column;
 	width: 98px;
 }
+
+.card-AH  { background-image: url("/assets/cards/AH.PNG") }
+.card-2H  { background-image: url("/assets/cards/2H.PNG") }
+.card-3H  { background-image: url("/assets/cards/3H.PNG") }
+.card-4H  { background-image: url("/assets/cards/4H.PNG") }
+.card-5H  { background-image: url("/assets/cards/5H.PNG") }
+.card-6H  { background-image: url("/assets/cards/6H.PNG") }
+.card-7H  { background-image: url("/assets/cards/7H.PNG") }
+.card-8H  { background-image: url("/assets/cards/8H.PNG") }
+.card-9H  { background-image: url("/assets/cards/9H.PNG") }
+.card-10H { background-image: url("/assets/cards/10H.PNG") }
+.card-JH  { background-image: url("/assets/cards/JH.PNG") }
+.card-QH  { background-image: url("/assets/cards/QH.PNG") }
+.card-KH  { background-image: url("/assets/cards/KH.PNG") }
+.card-AD  { background-image: url("/assets/cards/AD.PNG") }
+.card-2D  { background-image: url("/assets/cards/2D.PNG") }
+.card-3D  { background-image: url("/assets/cards/3D.PNG") }
+.card-4D  { background-image: url("/assets/cards/4D.PNG") }
+.card-5D  { background-image: url("/assets/cards/5D.PNG") }
+.card-6D  { background-image: url("/assets/cards/6D.PNG") }
+.card-7D  { background-image: url("/assets/cards/7D.PNG") }
+.card-8D  { background-image: url("/assets/cards/8D.PNG") }
+.card-9D  { background-image: url("/assets/cards/9D.PNG") }
+.card-10D { background-image: url("/assets/cards/10D.PNG") }
+.card-JD  { background-image: url("/assets/cards/JD.PNG") }
+.card-QD  { background-image: url("/assets/cards/QD.PNG") }
+.card-KD  { background-image: url("/assets/cards/KD.PNG") }
+.card-AS  { background-image: url("/assets/cards/AS.PNG") }
+.card-2S  { background-image: url("/assets/cards/2S.PNG") }
+.card-3S  { background-image: url("/assets/cards/3S.PNG") }
+.card-4S  { background-image: url("/assets/cards/4S.PNG") }
+.card-5S  { background-image: url("/assets/cards/5S.PNG") }
+.card-6S  { background-image: url("/assets/cards/6S.PNG") }
+.card-7S  { background-image: url("/assets/cards/7S.PNG") }
+.card-8S  { background-image: url("/assets/cards/8S.PNG") }
+.card-9S  { background-image: url("/assets/cards/9S.PNG") }
+.card-10S { background-image: url("/assets/cards/10S.PNG") }
+.card-JS  { background-image: url("/assets/cards/JS.PNG") }
+.card-QS  { background-image: url("/assets/cards/QS.PNG") }
+.card-KS  { background-image: url("/assets/cards/KS.PNG") }
+.card-AC  { background-image: url("/assets/cards/AC.PNG") }
+.card-2C  { background-image: url("/assets/cards/2C.PNG") }
+.card-3C  { background-image: url("/assets/cards/3C.PNG") }
+.card-4C  { background-image: url("/assets/cards/4C.PNG") }
+.card-5C  { background-image: url("/assets/cards/5C.PNG") }
+.card-6C  { background-image: url("/assets/cards/6C.PNG") }
+.card-7C  { background-image: url("/assets/cards/7C.PNG") }
+.card-8C  { background-image: url("/assets/cards/8C.PNG") }
+.card-9C  { background-image: url("/assets/cards/9C.PNG") }
+.card-10C { background-image: url("/assets/cards/10C.PNG") }
+.card-JC  { background-image: url("/assets/cards/JC.PNG") }
+.card-QC  { background-image: url("/assets/cards/QC.PNG") }
+.card-KC  { background-image: url("/assets/cards/KC.PNG") }

@@ -49,6 +49,7 @@ class Solatare:
     	self.moves_left += 1
 
     def turn_deal (self):
+    	self.moves_left = 3
     	for e in self.stack[1:]:
     		e.append(self.deck.pop())
 

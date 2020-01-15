@@ -18,11 +18,6 @@ export default class App extends Component {
 	}
 
 	deal() {
-		solatare.score();
-		this.update();
-	}
-
-	deal() {
 		solatare.turn_deal();
 		this.update();
 	}
@@ -46,55 +41,72 @@ export default class App extends Component {
 	}
 
 	col_can_score(colnum) {
-		// TODO
-		return this.state.stack[colnum].length >= 4;
+		const col = this.state.stack[colnum];
+		const { trump } = this.state;
+		if(col.length < 4) return false;
+		const last4 = col.slice(-4)
+		let suit = false;
+		let trumpcount = 0;
+		const suitmismatch = last4.some(card => {
+			const c_face = card.slice(0, -1);
+			const c_suit = card.slice(   -1);
+			if(!suit) suit = c_suit;
+			if(c_face === trump) {
+				trumpcount++;
+				return false;
+			}
+			return (c_suit !== suit);
+		});
+		if(trumpcount === 4) return true;
+		if(suitmismatch || trumpcount > 0) return false;
+		return true;
 	}
 
 	render() {
-		const { state } = this;
+		const { deck, message, moves_left, moving_card, stack, trump } = this.state;
 		// console.log("state", state);
-		console.log("stack", JSON.stringify(state.stack));
+		// console.log("stack", JSON.stringify(state.stack));
 		return (
 			<div id="app">
 				<div class="row">
 				{
-					state.stack.map((cards, colnum) => (
+					stack.map((cards, colnum) => (
 						!!colnum && <div class="column">
 						{
 							cards.map((card, n) => {
-								const selected = state.moving_card === card;
+								const clickable = moves_left > 0;
+								const selected = moving_card === card;
+								const cardClass = `card card-${card}`;
 								const cardProps = {
-									className: `card clickable ${selected ? "selected" : ""}`,
-									onClick: () => this.click_card(card),
+									className: `${cardClass} ${clickable ? "clickable" : ""} ${selected ? "selected" : ""}`,
+									onClick: () => clickable && this.click_card(card),
 								}
-								return (
-									<div {...cardProps}>
-										<img src={`/assets/cards/${card}.PNG`} />
-									</div>
-								)
+								return <div {...cardProps} />
 							})
 						}
 						{
-							state.moving_card !== ""
-							&& !cards.includes(state.moving_card)
+							moving_card !== ""
+							&& !cards.includes(moving_card)
 							&& (
-								<div className="target" onClick={() => this.move(state.moving_card, colnum)} />
+								<div className="target" onClick={() => this.move(moving_card, colnum)} />
 							)
 						}
 						{
-							this.col_can_score(colnum) && <button onClick={e => this.score(colnum)} {...{ disabled: state.moving_card !== "" }}>score</button>
+							this.col_can_score(colnum) && <button onClick={e => this.score(colnum)} {...{ disabled: moving_card !== "" }}>score</button>
 						}
 						</div>
 					))
 				}
 				</div>
-				<div>left in deck: {state.deck.length}</div>
-				<div>moves left: {state.moves_left}</div>
-				<div>the trump card is: {state.trump}</div>
+				<div>left in deck: {deck.length}</div>
+				<div>moves left: {moves_left}</div>
+				<div>the trump card is: {trump}</div>
 				{/*<div>score pile? {state.stack[0].join(",")}</div>*/}
-				<div id="message">{state.message}</div>
+				<div id="message">{message}</div>
 
-				<button onClick={e => this.deal()} {...{ disabled: state.moving_card !== "" }}>deal</button>
+				{deck.length && <button onClick={e => this.deal()} {...{ disabled: moving_card !== "" }}>deal</button>}
+				{deck.length === 0 && moves_left <= 0 && stack[0].length < 52 && <div>game over</div>}
+				{stack[0].length === 52 && <div>you win!</div>}
 			</div>
 		);
 	}
