@@ -71,13 +71,15 @@ export default class App extends Component {
 				<div class="row">
 				{
 					stack.map((cards, colnum) => (
-						!!colnum && <div class="column">
+						!!colnum && <div class="column" key={colnum}>
 						{
 							cards.map((card, n) => {
 								const clickable = moves_left > 0;
 								const selected = moving_card === card;
-								const cardClass = `card card-${card}`;
+								const istrump = card.slice(0, -1) === trump;
+								const cardClass = `card card-${card} ${istrump ? "trump" : ""}`;
 								const cardProps = {
+									key: `${colnum}-${n}`,
 									className: `${cardClass} ${clickable ? "clickable" : ""} ${selected ? "selected" : ""}`,
 									onClick: () => clickable && this.click_card(card),
 								}
@@ -104,7 +106,7 @@ export default class App extends Component {
 				{/*<div>score pile? {state.stack[0].join(",")}</div>*/}
 				<div id="message">{message}</div>
 
-				{deck.length && <button onClick={e => this.deal()} {...{ disabled: moving_card !== "" }}>deal</button>}
+				{!!deck.length && <button onClick={e => this.deal()} {...{ disabled: moving_card !== "" }}>deal</button>}
 				{deck.length === 0 && moves_left <= 0 && stack[0].length < 52 && <div>game over</div>}
 				{stack[0].length === 52 && <div>you win!</div>}
 			</div>

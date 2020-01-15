@@ -17,6 +17,7 @@ html, body {
 
 #app {
 	height: 100%;
+	text-align: center;
 }
 
 .card,
@@ -27,17 +28,25 @@ html, body {
 .card {
 	transition: filter 150ms linear, transform 150ms linear;
 	filter: drop-shadow(0 0 0 black);
-	transform: scale(1);
+	transform: scale(1.001);
 }
 .card.clickable {
 	cursor: pointer;
 }
 .card.clickable:hover {
 	filter: drop-shadow(0 0 3px black);
-	transform: scale(1.01);
+	transform: scale(1.025);
 }
 .card.selected {
 	opacity: 0.3;
+}
+.card,
+.target {
+	margin-top: -72px;
+}
+.card:first-child,
+.target:first-child {
+	margin-top: 0;
 }
 .target {
 	cursor: pointer;
@@ -51,11 +60,20 @@ html, body {
 .row {
 	display: flex;
 	flex-direction: row;
+	justify-content: center;
 }
 .column {
 	display: flex;
 	flex-direction: column;
 	width: 98px;
+	margin: 0 5px;
+}
+
+.card.trump {
+	filter: invert(1) drop-shadow(0 0 0 black);
+}
+.card.trump.clickable:hover {
+	filter: invert(1) drop-shadow(0 0 3px black);
 }
 
 .card-AH  { background-image: url("/assets/cards/AH.PNG") }
