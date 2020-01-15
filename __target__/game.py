@@ -18,7 +18,7 @@ class Solatare:
         self.message = ""
         self.moving_card = ""
         self.moves_left = 3
-        self.trump = ranks[random.randint(0,len(ranks))]
+        self.trump = ranks[random.randint(0,len(ranks)-1)]
         for suit in suits:
         	for rank in ranks:
         		self.deck.append(rank + suit)
