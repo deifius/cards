@@ -11,8 +11,11 @@ import random
 class Solatare:
 
     def __init__ (self):
+        self.setup()
+
+    def setup (self):
         suits = ["H","D","S","C"]
-        ranks = ["A","2","3","4",'5','6','7','8','9','10',"J","Q","K"]
+        ranks = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"]
         self.deck = []
         self.stack = []
         self.message = ""
@@ -23,6 +26,12 @@ class Solatare:
         	for rank in ranks:
         		self.deck.append(rank + suit)
         for e in range(5): self.stack.append([])
+
+    def restore (self, data):
+        self.deck = data.deck
+        self.stack = data.stack
+        self.moves_left = data.moves_left
+        self.trump = data.trump
 
     def start_move (self, card):
         if card == self.moving_card:

@@ -7,19 +7,51 @@ export default class App extends Component {
 
 	constructor() {
 		super();
-		solatare.game_start();
+		const restoreState = JSON.parse(localStorage.getItem("game_state") || "false");
+		if(restoreState) {
+			solatare.restore(restoreState);
+		} else {
+			this.start()
+		}
 		this.state = { ...solatare };
 	}
 
+	start() {
+		solatare.game_start();
+	}
+
+	restart() {
+		solatare.setup();
+		solatare.game_start();
+		this.update();
+	}
 	update() {
-		this.setState({
+		const newState = {
 			...solatare
-		});
+		};
+		const {
+			stack,
+			deck,
+			trump,
+			moves_left,
+		} = solatare;
+		const saveState = {
+			stack,
+			deck,
+			trump,
+			moves_left,
+		};
+		localStorage.setItem("game_state", JSON.stringify(saveState));
+		this.setState(newState);
 	}
 
 	deal() {
-		solatare.turn_deal();
+		solatare.game_start();
 		this.update();
+	}
+
+	drag_start(card, div) {
+		//console.log(card, div);
 	}
 
 	click_card(card) {
@@ -74,6 +106,7 @@ export default class App extends Component {
 						!!colnum && <div class="column" key={colnum}>
 						{
 							cards.map((card, n) => {
+								if(!card) return null;
 								const clickable = moves_left > 0;
 								const selected = moving_card === card;
 								const istrump = card.slice(0, -1) === trump;
@@ -82,6 +115,7 @@ export default class App extends Component {
 									key: `${colnum}-${n}`,
 									className: `${cardClass} ${clickable ? "clickable" : ""} ${selected ? "selected" : ""}`,
 									onClick: () => clickable && this.click_card(card),
+									//onMouseDown: (e) => clickable && this.drag_start(card, e.target),
 								}
 								return <div {...cardProps} />
 							})
@@ -108,7 +142,7 @@ export default class App extends Component {
 
 				{!!deck.length && <button onClick={e => this.deal()} {...{ disabled: moving_card !== "" }}>deal</button>}
 				{deck.length === 0 && moves_left <= 0 && stack[0].length < 52 && <div>game over</div>}
-				{stack[0].length === 52 && <div>you win!</div>}
+				{stack[0].length === 52 && <div>you win!<br /><button onClick={() => this.restart()}>play again</button></div>}
 			</div>
 		);
 	}

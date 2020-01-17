@@ -26,23 +26,25 @@ html, body {
 	height: 145px;
 }
 .card {
-	transition: filter 150ms linear, transform 150ms linear;
+	transition: filter 150ms linear, transform 150ms linear, opacity 150 linear;
 	filter: drop-shadow(0 0 0 black);
 	transform: scale(1.001);
 }
 .card.clickable {
 	cursor: pointer;
 }
-.card.clickable:hover {
+.card.clickable:hover,
+.card.clickable:hover ~ .card {
 	filter: drop-shadow(0 0 3px black);
 	transform: scale(1.025);
 }
-.card.selected {
-	opacity: 0.3;
+.card.selected,
+.card.selected ~ .card {
+	opacity: 0.5;
 }
 .card,
 .target {
-	margin-top: -72px;
+	margin-top: -85px;
 }
 .card:first-child,
 .target:first-child {
@@ -72,7 +74,8 @@ html, body {
 .card.trump {
 	filter: invert(1) drop-shadow(0 0 0 black);
 }
-.card.trump.clickable:hover {
+.card.trump.clickable:hover,
+.card.clickable:hover ~ .card.trump {
 	filter: invert(1) drop-shadow(0 0 3px black);
 }
 
