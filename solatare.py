@@ -4,7 +4,7 @@ from random import shuffle
 from os import system
 import random
 import texttable as tt
-import pdb
+#import pdb
 from time import sleep
 
 suits = ["H","D","S","C"]
@@ -92,6 +92,6 @@ def game_start():
 				sleep(4)
 				table_show()
 		turn_deal()
-		pdb.set_trace()
+		#pdb.set_trace()
 
 game_start()
