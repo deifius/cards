@@ -8,7 +8,7 @@ import random
 # Compile to JS:
 # python3 -m transcrypt -b -m -n game.py
 
-class Solatare:
+class Quadzilla:
 
     def __init__ (self):
         self.setup()
@@ -66,4 +66,4 @@ class Solatare:
     	shuffle(self.deck)
     	self.turn_deal()
 
-solatare = Solatare ()
+quadzilla = Quadzilla ()

@@ -1,53 +1,86 @@
 import * as game from '../../../__target__/game.js';
+import localforage from "localforage";
 import { h, Component } from 'preact';
 
-const { solatare } = game;
+const { quadzilla } = game;
 
 export default class App extends Component {
 
 	constructor() {
 		super();
-		const restoreState = JSON.parse(localStorage.getItem("game_state") || "false");
-		if(restoreState) {
-			solatare.restore(restoreState);
-		} else {
-			this.start()
-		}
-		this.state = { ...solatare };
+		this.state = { ...quadzilla };
+		localforage.getItem("game_state", (err, json) => {
+			if(json) {
+				quadzilla.restore(json);
+			} else {
+				this.start()
+			}
+			this.update();
+		})
 	}
 
 	start() {
-		solatare.game_start();
+		quadzilla.game_start();
 	}
 
 	restart() {
-		solatare.setup();
-		solatare.game_start();
-		this.update();
+		quadzilla.setup();
+		quadzilla.game_start();
+		localforage.setItem("undo_stack", [], () => {
+			this.update();
+		})
 	}
-	update() {
-		const newState = {
-			...solatare
-		};
+
+	retrieve_state() {
 		const {
 			stack,
 			deck,
 			trump,
 			moves_left,
-		} = solatare;
-		const saveState = {
+		} = quadzilla;
+		return {
 			stack,
 			deck,
 			trump,
 			moves_left,
 		};
-		localStorage.setItem("game_state", JSON.stringify(saveState));
-		this.setState(newState);
+	}
+
+	persist_state() {
+		localforage.setItem("game_state", this.retrieve_state());
+	}
+
+	persist_undo(and_then) {
+		localforage.getItem("undo_stack", (err, undo_stack) => {
+			if(!undo_stack || !undo_stack.length) undo_stack = [];
+			undo_stack.push(this.retrieve_state());
+			localforage.setItem("undo_stack", undo_stack, and_then);
+		});
+	}
+
+	update() {
+		this.setState({...quadzilla});
+		this.persist_state();
+	}
+
+	undo() {
+		localforage.getItem("undo_stack", (err, undo_stack) => {
+			if(!err && undo_stack && undo_stack.length) {
+				const prev_state = undo_stack.pop();
+				localforage.setItem("undo_stack", undo_stack, () => {
+					quadzilla.restore(prev_state);
+					this.setState({...quadzilla});
+					this.persist_state();
+				});
+			}
+		});
 	}
 
 	deal() {
-		solatare.game_start();
-		this.update();
+		this.persist_undo(() => {
+			quadzilla.game_start();
+			this.update();
+		})
 	}
 
 	drag_start(card, div) {
@@ -55,21 +88,22 @@ export default class App extends Component {
 	}
 
 	click_card(card) {
-		// console.log("click", card);
-		solatare.start_move(card);
+		quadzilla.start_move(card);
 		this.update();
 	}
 
 	move(card, colnum) {
-		// console.log("move", card, colnum);
-		solatare.move(card, colnum);
-		this.update();
+		this.persist_undo(() => {
+			quadzilla.move(card, colnum);
+			this.update();
+		})
 	}
 
 	score(colnum) {
-		// console.log("score", colnum);
-		solatare.score(colnum);
-		this.update();
+		this.persist_undo(() => {
+			quadzilla.score(colnum);
+			this.update();
+		});
 	}
 
 	col_can_score(colnum) {
@@ -96,6 +130,7 @@ export default class App extends Component {
 
 	render() {
 		const { deck, message, moves_left, moving_card, stack, trump } = this.state;
+		const play_again = <button onClick={() => this.restart()}>play again</button>;
 		// console.log("state", state);
 		// console.log("stack", JSON.stringify(state.stack));
 		return (
@@ -140,9 +175,10 @@ export default class App extends Component {
 				{/*<div>score pile? {state.stack[0].join(",")}</div>*/}
 				<div id="message">{message}</div>
 
+				<button onClick={e => this.undo()}>undo</button>
 				{!!deck.length && <button onClick={e => this.deal()} {...{ disabled: moving_card !== "" }}>deal</button>}
-				{deck.length === 0 && moves_left <= 0 && stack[0].length < 52 && <div>game over</div>}
-				{stack[0].length === 52 && <div>you win!<br /><button onClick={() => this.restart()}>play again</button></div>}
+				{deck.length === 0 && moves_left <= 0 && stack[0].length < 52 && <div>game over<br />{play_again}</div>}
+				{stack[0].length === 52 && <div>you win!<br />{play_again}</div>}
 			</div>
 		);
 	}
