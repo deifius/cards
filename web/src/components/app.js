@@ -1,15 +1,19 @@
 import * as game from '../../../__target__/game.js';
 import localforage from "localforage";
 import { h, Component } from 'preact';
+import clsx from "clsx";
 
 const { quadzilla } = game;
+
+const GAME_STATE = "qz_game_state";
+const UNDO_STACK = "qz_undo_stack";
 
 export default class App extends Component {
 
 	constructor() {
 		super();
 		this.state = { ...quadzilla };
-		localforage.getItem("game_state", (err, json) => {
+		localforage.getItem(GAME_STATE, (err, json) => {
 			if(json) {
 				quadzilla.restore(json);
 			} else {
@@ -26,7 +30,7 @@ export default class App extends Component {
 	restart() {
 		quadzilla.setup();
 		quadzilla.game_start();
-		localforage.setItem("undo_stack", [], () => {
+		localforage.setItem(UNDO_STACK, [], () => {
 			this.update();
 		})
 	}
@@ -47,14 +51,14 @@ export default class App extends Component {
 	}
 
 	persist_state() {
-		localforage.setItem("game_state", this.retrieve_state());
+		localforage.setItem(GAME_STATE, this.retrieve_state());
 	}
 
 	persist_undo(and_then) {
-		localforage.getItem("undo_stack", (err, undo_stack) => {
+		localforage.getItem(UNDO_STACK, (err, undo_stack) => {
 			if(!undo_stack || !undo_stack.length) undo_stack = [];
 			undo_stack.push(this.retrieve_state());
-			localforage.setItem("undo_stack", undo_stack, and_then);
+			localforage.setItem(UNDO_STACK, undo_stack, and_then);
 		});
 	}
 
@@ -64,10 +68,10 @@ export default class App extends Component {
 	}
 
 	undo() {
-		localforage.getItem("undo_stack", (err, undo_stack) => {
+		localforage.getItem(UNDO_STACK, (err, undo_stack) => {
 			if(!err && undo_stack && undo_stack.length) {
 				const prev_state = undo_stack.pop();
-				localforage.setItem("undo_stack", undo_stack, () => {
+				localforage.setItem(UNDO_STACK, undo_stack, () => {
 					quadzilla.restore(prev_state);
 					this.setState({...quadzilla});
 					this.persist_state();
@@ -87,23 +91,37 @@ export default class App extends Component {
 		//console.log(card, div);
 	}
 
-	click_card(card) {
-		quadzilla.start_move(card);
+	click_card(card, col) {
+		quadzilla.start_move(card, col);
 		this.update();
 	}
 
-	move(card, colnum) {
+	move(col) {
+		const { moving_card } = this.state;
+		if(moving_card[1] === col) return;
 		this.persist_undo(() => {
-			quadzilla.move(card, colnum);
+			quadzilla.move(moving_card[0], col);
 			this.update();
 		})
 	}
 
-	score(colnum) {
+	score(col) {
 		this.persist_undo(() => {
-			quadzilla.score(colnum);
+			quadzilla.score(col);
 			this.update();
 		});
+	}
+
+	attempt_score(col) {
+
+	}
+
+	can_move_to(col) {
+		const { moving_card, stack } = this.state;
+		if(moving_card[0].length === 0) return false;
+		if(moving_card[1] === col)      return false;
+		if(stack[col].length === 0)     return true;
+		return stack[col].slice(-1)[0][1] === moving_card[0][1];
 	}
 
 	col_can_score(colnum) {
@@ -114,14 +132,12 @@ export default class App extends Component {
 		let suit = false;
 		let trumpcount = 0;
 		const suitmismatch = last4.some(card => {
-			const c_face = card.slice(0, -1);
-			const c_suit = card.slice(   -1);
-			if(!suit) suit = c_suit;
-			if(c_face === trump) {
+			if(!suit) suit = card[1];
+			if(card[0] === trump) {
 				trumpcount++;
 				return false;
 			}
-			return (c_suit !== suit);
+			return (card[1] !== suit);
 		});
 		if(trumpcount === 4) return true;
 		if(suitmismatch || trumpcount > 0) return false;
@@ -131,39 +147,42 @@ export default class App extends Component {
 	render() {
 		const { deck, message, moves_left, moving_card, stack, trump } = this.state;
 		const play_again = <button onClick={() => this.restart()}>play again</button>;
-		// console.log("state", state);
-		// console.log("stack", JSON.stringify(state.stack));
+		const moving_card_str = moving_card[0].join("");
+		// console.log("state", this.state);
 		return (
 			<div id="app">
 				<div class="row">
 				{
-					stack.map((cards, colnum) => (
-						!!colnum && <div class="column" key={colnum}>
+					stack.map((cards, col) => (
+						!!col && <div class="column" key={col}>
 						{
 							cards.map((card, n) => {
-								if(!card) return null;
+								if(!card || !card.length) return null;
+								const card_str = card.join("");
 								const clickable = moves_left > 0;
-								const selected = moving_card === card;
-								const istrump = card.slice(0, -1) === trump;
-								const cardClass = `card card-${card} ${istrump ? "trump" : ""}`;
-								const cardProps = {
-									key: `${colnum}-${n}`,
-									className: `${cardClass} ${clickable ? "clickable" : ""} ${selected ? "selected" : ""}`,
-									onClick: () => clickable && this.click_card(card),
+								const selected = moving_card_str === card_str;
+								const card_props = {
+									key: `${col}-${n}`,
+									className: clsx("card", `card-${card_str}`, { clickable, selected, trump: card[1] === trump }),
+									onClick: () => clickable && this.click_card(card, col),
 									//onMouseDown: (e) => clickable && this.drag_start(card, e.target),
 								}
-								return <div {...cardProps} />
+								return <div {...card_props} />
 							})
 						}
 						{
-							moving_card !== ""
-							&& !cards.includes(moving_card)
+							this.can_move_to(col)
 							&& (
-								<div className="target" onClick={() => this.move(moving_card, colnum)} />
+								<div className="target" onClick={() => this.move(col)} />
 							)
 						}
 						{
-							this.col_can_score(colnum) && <button onClick={e => this.score(colnum)} {...{ disabled: moving_card !== "" }}>score</button>
+							this.col_can_score(col)
+							&& (
+								<button onClick={e => this.score(col)} {...{ disabled: moving_card_str !== "" }}>
+									score
+								</button>
+							)
 						}
 						</div>
 					))
@@ -176,9 +195,25 @@ export default class App extends Component {
 				<div id="message">{message}</div>
 
 				<button onClick={e => this.undo()}>undo</button>
-				{!!deck.length && <button onClick={e => this.deal()} {...{ disabled: moving_card !== "" }}>deal</button>}
-				{deck.length === 0 && moves_left <= 0 && stack[0].length < 52 && <div>game over<br />{play_again}</div>}
-				{stack[0].length === 52 && <div>you win!<br />{play_again}</div>}
+				{!!deck.length && (
+					<button onClick={e => this.deal()} {...{ disabled: moving_card_str !== "" }}>
+						deal
+					</button>
+				)}
+				{deck.length === 0 && moves_left <= 0 && stack[0].length < 52 && (
+					<div>
+						game over
+						<br />
+						{play_again}
+					</div>
+				)}
+				{stack[0].length === 52 && (
+					<div>
+						you win!
+						<br />
+						{play_again}
+					</div>
+				)}
 			</div>
 		);
 	}
