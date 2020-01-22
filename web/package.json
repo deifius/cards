@@ -35,6 +35,8 @@
   },
   "dependencies": {
     "@types/react": "^16.9.17",
+    "clsx": "^1.0.4",
+    "localforage": "^1.7.3",
     "preact": "^10.2.1",
     "preact-render-to-string": "^5.1.0",
     "preact-router": "^3.0.0",
