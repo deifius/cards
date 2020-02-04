@@ -8,7 +8,7 @@ import texttable as tt
 from time import sleep
 
 suits = ["H","D","S","C"]
-ranks = ["A","2","3","4",'5','6','7','8','9','10',"J","Q","K"]
+ranks = ["A","2","3","4",'5','6','7','8','9','0',"J","Q","K"]
 
 deck = []
 for suit in suits:
@@ -61,6 +61,17 @@ def move(cardtarget, tocol):
 	global moves_left
 	moves_left += -1
 	table_show()
+
+def is_scorable (column, trump):
+	if len(column) < 4: return False
+	ranks = ''
+	suits = ''
+	for card in column:
+		 suits += (card[-1])
+		ranks += (card[0])
+	if re.search(trump*4, ranks): return re.search(trump*4, ranks).span()
+	if re.search("(.)\\1{3,3}", suits): return re.search("(.)\\1{3,3}", suits).span()
+	return False
 
 def score(scorecol):
 	for i in range(4): stack[0].append(scorecol.pop())
